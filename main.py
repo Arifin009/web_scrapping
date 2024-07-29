@@ -22,7 +22,7 @@ for page_num in range(1, 11):
         # Find and extract agent names and companies
         agent_names = soup.find_all('div', class_='agent-name')
         companies = soup.find_all('div', class_='agent-group')
-
+        phone = soup.find_all('div', class_='agent-phone')
         # Extract experience information
         experience_divs = soup.find_all('div', class_='base__StyledType-rui__sc-108xfm0-0 gwFmbS')
         experience_texts = [div.find('span', class_='jsx-3873707352 bold-text').get_text(strip=True) for div in experience_divs if div.find('span', class_='jsx-3873707352 bold-text')]
@@ -39,14 +39,15 @@ for page_num in range(1, 11):
       
 
         # Pair agent names, companies, experiences, activity ranges, and listed houses
-        for agent_name, company in zip(agent_names, companies):
+        for agent_name, company,phone in zip(agent_names, companies,phone):
             agent_text = ' '.join(agent_name.stripped_strings)
             company_text = ' '.join(company.stripped_strings)
+            phone_text = ' '.join(phone.stripped_strings)
             # Extract information or default to 'N/A'
             experience_text = experience_texts.pop(0) if experience_texts else 'N/A'
             activity_range_text = activity_ranges.pop(0) if activity_ranges else 'N/A'
             listed_house_text = listed_houses.pop(0) if listed_houses else 'N/A'
-            data.append([agent_text, company_text, experience_text, activity_range_text, listed_house_text])
+            data.append([agent_text, company_text, experience_text, activity_range_text, listed_house_text,phone_text])
     else:
         print(f"Failed to retrieve the webpage. Status code: {r.status_code}")
 
@@ -55,7 +56,7 @@ output_file = os.path.expanduser('agents_data.csv')  # Change file path as neede
 try:
     with open(output_file, 'w', newline='', encoding='utf-8') as file:
         writer = csv.writer(file)
-        writer.writerow(['Agent Name', 'Company', 'Experience', 'Activity Range', 'Listed House'])  # Write header
+        writer.writerow(['Agent Name', 'Company', 'Experience', 'Activity Range', 'Listed House','phone'])  # Write header
         writer.writerows(data)
     print(f"Data written to {output_file} successfully.")
 except PermissionError as e:
